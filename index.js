@@ -98,3 +98,87 @@ function getGithubToken(callback) {
 		});
 	}
 }
+
+function createRepo(callback) {
+	var argv = require('minimist')(process.argv.slice(2));
+
+	var questions = [
+		{
+			type: 'input',
+			name: 'name',
+			message: 'Enter a name for the repository:',
+			default: argv._[0] || files.getCurrentDirectoryBase(),
+			validate: funciton(value) {
+				if (value.length) {
+					return true;
+				} else {
+					return 'Please enter a name for the repository';
+				}
+			}
+		},
+		{
+			type: 'input',
+			name: 'description',
+			default: argv._[1] || null,
+			message: 'Optionally enter a description of the repository:'
+		},
+		{
+			type: 'list',
+			name: 'visibility',
+			message: 'Public or private:',
+			choices: ['public', 'private'],
+			default: 'public'
+		}
+	];
+
+	inquirer.prompt(questions).then(function(answers) {
+		var status = new Spinner ('Creating repository...');
+		status.start();
+
+		var data = {
+			name: answers.name,
+			description: answers.description,
+			private: (answers.visibility === 'private')
+		};
+
+		github.repos.create(
+			data,
+			function(err, res) {
+				status.stop();
+				if(err) {
+					return callback(err);
+				} else {
+					return callback(null, res.ssh_url);
+				}
+			}
+			);
+	});
+
+	function createGitignore(callback) {
+		var filelist = _.without(fs.readdirSync('.'), '.git', '.gitignore');
+
+		if (filelist.length) {
+			inquirer.prompt(
+				[
+					{
+						type: 'checkbox',
+						name: 'ignore',
+						message: 'Select the files and / or folders you wish to ignore',
+						choices: filelist,
+						default: ['node_modules', 'bower_components']
+					}
+				]
+				).then(function (answers) {
+					if (answers.ignore.length) {
+						fs.writeFileSync('.gitignore', answers.ignore.join('\n'));
+					} else {
+						touch('.gitignore');
+					}
+					return callback();
+				});
+		} else {
+			touch('.gitignore');
+			return callback();
+		}
+	}
+}
