@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var chalk = require('chalk');
 var clear = require('clear');
 var CLI = require('clui');
@@ -182,3 +184,64 @@ function createRepo(callback) {
 		}
 	}
 }
+
+function setupRepo(url, callback) {
+	var status = new Spinner('Setting up the repository..');
+	status.start();
+
+	git
+		.init()
+		.add('.gitignore')
+		.add('./*')
+		.commit('Initial commit')
+		.addRemote('origin', url)
+		.push('origin', 'master')
+		.then(function () {
+			status.stop();
+			return callback();
+		});
+}
+
+function githubAuth(callback) {
+	getGithubToken(function(err, token) {
+		if(err) {
+			return callback(err);
+		} 
+		github.authenticate({
+			type: 'oauth',
+			token: token
+		});
+		return callback(null,token);
+	});
+}
+
+githubAuth(function(err, authed) {
+	if (err) {
+		switch (err.code) {
+			case 401:
+				console.log(chalk.red('Couldn\'t log you in. Please ensure that your username and password are correct.'));
+				break;
+			case 422:
+				console.log(chalk.red('You already have an access token'));
+				break;
+		}
+	}
+
+	if (authed) {
+		console.log(chalk.green('Successfully authenticated.'));
+		createRepo(function(err, url) {
+			if (err) {
+				console.log(chalk.red('An error has occured.'));
+			}
+			if (url) {
+				createGitignore(function() {
+					setupRepo(url, function(err) {
+						if (!err) {
+							console.log(chalk.green('All done!'));
+						}
+					});
+				});
+			}
+		});
+	}
+});
