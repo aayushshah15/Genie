@@ -110,7 +110,7 @@ function createRepo(callback) {
 			name: 'name',
 			message: 'Enter a name for the repository:',
 			default: argv._[0] || files.getCurrentDirectoryBase(),
-			validate: funciton(value) {
+			validate: function(value) {
 				if (value.length) {
 					return true;
 				} else {
