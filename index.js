@@ -59,7 +59,7 @@ function getGithubCredentials(callback) {
 }
 
 var github = new GithubApi({
-	varsion: '3.0.0'
+	version: '3.0.0'
 });
 
 function getGithubToken(callback) {
