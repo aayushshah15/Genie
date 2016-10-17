@@ -22,10 +22,16 @@ console.log(
 		)
 	);
 
-if (files.directoryExists('.git')) {
+if (process.argv.slice(2).length == 0 && files.directoryExists('.git')) {
 	console.log(chalk.red('Already a git repository!'));
 	process.exit();
 }
+
+if (_.includes(process.argv.slice(2), 'squash')) {
+	console.log(chalk.yellow("Need to implement support for squashing!"));
+
+	process.exit();
+} 
 
 function getGithubCredentials(callback) {
 	var questions = [
@@ -213,7 +219,6 @@ function githubAuth(callback) {
 	});
 }
 
-
 githubAuth(function(err, authed) {
 	if (err) {
 		switch (err.code) {
@@ -230,7 +235,7 @@ githubAuth(function(err, authed) {
 		console.log(chalk.green('Successfully authenticated.'));
 		createRepo(function(err, url) {
 			if (err) {
-				console.log(chalk.red('An error has occured.'));
+				console.log(chalk.red('An error has occured. Please reset and try again.'));
 			}
 			if (url) {
 				createGitignore(function() {
