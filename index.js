@@ -27,6 +27,13 @@ if (process.argv.slice(2).length == 0 && files.directoryExists('.git')) {
 	process.exit();
 }
 
+if (_.includes(process.argv.slice(2), 'reset')) {
+	var prefs = new Preferences('genie');
+	delete prefs.github;
+	console.log(chalk.green("Github token successfully reset!"));
+	process.exit();
+}
+
 if (_.includes(process.argv.slice(2), 'squash')) {
 	console.log(chalk.yellow("Need to implement support for squashing!"));
 
