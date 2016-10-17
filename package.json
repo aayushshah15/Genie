@@ -24,8 +24,9 @@
     "preferences": "^0.2.1",
     "simple-git": "^1.51.0",
     "touch": "^1.0.0",
+    },
     "bin": {
       "genie": "./index.js"
     }
-  }
+
 }
