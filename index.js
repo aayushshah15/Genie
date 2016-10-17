@@ -85,7 +85,7 @@ function getGithubToken(callback) {
 				scopes: ['user', 'public_repo', 'repo', 'repo:status'],
 				note: 'genie: Supercharged git cli'
 			}, function(err, res) {
-				status.stop();
+				spin.stop();
 				if (err) {
 					return callback(err);
 				}
@@ -214,6 +214,7 @@ function githubAuth(callback) {
 		return callback(null,token);
 	});
 }
+
 
 githubAuth(function(err, authed) {
 	if (err) {
