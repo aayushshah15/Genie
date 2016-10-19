@@ -36,7 +36,21 @@ if (_.includes(process.argv.slice(2), 'reset')) {
 
 if (_.includes(process.argv.slice(2), 'squash')) {
 	console.log(chalk.yellow("Need to implement support for squashing!"));
-
+	// Number of commits to be squashed. 
+	// N commits will be squashed into the last (the Nth) commit 
+	// Default is 0
+	var commits = 0;
+	for (var i = 0; i < process.argv.slice(2).length; ++i) {
+		if (parseInt(process.argv.slice(2)[i], 10) >= 1 && parseInt(process.argv.slice(2)[i], 10) <= 9) {
+			commits = parseInt(process.argv.slice(2)[i], 10);
+		} 
+	}
+	if (commits === 0) {
+		console.log(chalk.red("Please supply the number of commits to be squashed."));
+		process.exit();
+	}
+	var args = require('minimist')(process.argv.slice(2));
+	console.log(args);
 	process.exit();
 } 
 
