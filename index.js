@@ -51,6 +51,10 @@ if (_.includes(process.argv.slice(2), 'squash')) {
 	}
 	var args = require('minimist')(process.argv.slice(2));
 	console.log(args);
+	git.reset(['--soft', 'HEAD~'+commits], function() {
+		// TODO
+		git.commit()
+	});
 	process.exit();
 } 
 
